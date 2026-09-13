@@ -1,0 +1,24 @@
+Create window titled "Clicker OS" size 500 x 280
+Set score to 0
+
+Draw box at 15, 15 size 470 x 250 filled with "#12131C" as cardBg
+Draw text "Score: 0" at 35, 50 colored "#00ffcc" as scoreDisplay
+
+Draw button "Tap (+1)" at 35, 90 size 120 x 45 colored "#ff0055" as tapBtn
+Draw button "Boost (+5)" at 170, 90 size 130 x 45 colored "#00aaff" as boostBtn
+Draw button "Reset" at 315, 90 size 110 x 45 colored "#33334e" as resetBtn
+
+On click tapBtn:
+    Increase score by 1
+    Set text of scoreDisplay to "Score: " + score
+End
+
+On click boostBtn:
+    Increase score by 5
+    Set text of scoreDisplay to "Score: " + score
+End
+
+On click resetBtn:
+    Set score to 0
+    Set text of scoreDisplay to "Score: 0"
+End
