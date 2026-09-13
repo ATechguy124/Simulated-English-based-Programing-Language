@@ -26,12 +26,12 @@ export class EnglishVM {
     }
 
     this.executeStatements(this.program.body);
-    this.renderer.render(this.vm.getRenderList());
+    this.render();
 
     if (this.program.events['tick']) {
       this.clockInterval = setInterval(() => {
         this.executeStatements(this.program.events['tick'].statements);
-        this.renderer.render(this.vm.getRenderList());
+        this.render();
       }, 1000);
     }
   }
@@ -43,8 +43,14 @@ export class EnglishVM {
   handleEvent(targetId) {
     if (this.program && this.program.events[targetId]) {
       this.executeStatements(this.program.events[targetId].statements);
-      this.renderer.render(this.vm.getRenderList());
+      this.render();
     }
+  }
+
+  render() {
+    const list = this.vm.getRenderList();
+    this.events.updateRenderList(list);
+    this.renderer.render(list);
   }
 }
 
