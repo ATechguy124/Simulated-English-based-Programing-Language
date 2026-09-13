@@ -1,84 +1,56 @@
-// src/vm.js
-
-/**
- * Manages runtime memory, variable storage, expression evaluation,
- * and UI state trees for the EnglishScript Virtual Machine.
- */
-export class MemoryStore {
+  export class VM {
   constructor() {
-    this.variables = {};
-    this.uiElements = [];
+    this.state = {};
+    this.elements = new Map();
   }
 
-  // Resets runtime memory and UI elements
-  clear() {
-    this.variables = {};
-    this.uiElements = [];
+  reset() {
+    this.state = {};
+    this.elements.clear();
   }
 
-  // Store variable in memory
-  set(name, value) {
-    this.variables[name] = value;
+  evaluate(expr) {
+    const raw = expr.trim();
+    // Evaluate literal string concatenation and variable interpolation
+    const parts = raw.split('+').map(p => p.trim());
+    return parts.map(part => {
+      if (part.startsWith('"') && part.endsWith('"')) {
+        return part.slice(1, -1);
+      }
+      if (this.state.hasOwnProperty(part)) {
+        return this.state[part];
+      }
+      return part;
+    }).join('');
   }
 
-  // Increment numeric variable in memory
-  increment(name, byAmount = 1) {
-    const currentVal = Number(this.variables[name]) || 0;
-    this.variables[name] = currentVal + byAmount;
-  }
-
-  // Update text property of an existing UI element by ID
-  updateText(elementId, textValue) {
-    const element = this.uiElements.find(item => item.id === elementId);
-    if (element) {
-      element.text = String(textValue);
+  execute(stmt) {
+    switch (stmt.type) {
+      case 'SET_VAR': {
+        const val = this.evaluate(stmt.expr);
+        this.state[stmt.name] = isNaN(val) ? val : Number(val);
+        break;
+      }
+      case 'INCREMENT_VAR': {
+        const current = Number(this.state[stmt.name]) || 0;
+        this.state[stmt.name] = current + stmt.by;
+        break;
+      }
+      case 'CREATE_ELEMENT': {
+        this.elements.set(stmt.payload.id, { ...stmt.payload });
+        break;
+      }
+      case 'UPDATE_ELEMENT': {
+        if (this.elements.has(stmt.elementId)) {
+          const el = this.elements.get(stmt.elementId);
+          el.text = this.evaluate(stmt.expr);
+        }
+        break;
+      }
     }
   }
 
-  // Add or update a UI element in display memory
-  addUIElement(elementPayload) {
-    const existingIndex = this.uiElements.findIndex(item => item.id === elementPayload.id);
-    if (existingIndex !== -1) {
-      this.uiElements[existingIndex] = { ...elementPayload };
-    } else {
-      this.uiElements.push({ ...elementPayload });
-    }
-  }
-
-  // Return full array of registered UI elements for rendering
   getRenderList() {
-    return this.uiElements;
-  }
-
-  // Evaluates strings, numbers, variables, or basic string concatenations
-  evaluate(expression) {
-    if (typeof expression !== 'string') {
-      return expression;
-    }
-
-    const trimmed = expression.trim();
-
-    // Parse addition and string concatenation (e.g. "Clicks: " + count)
-    if (trimmed.includes('+')) {
-      const parts = trimmed.split('+').map(part => part.trim());
-      return parts.map(part => this.evaluate(part)).join('');
-    }
-
-    // Parse literal quoted strings
-    if (trimmed.startsWith('"') && trimmed.endsWith('"')) {
-      return trimmed.slice(1, -1);
-    }
-
-    // Parse numeric literals
-    if (!isNaN(trimmed) && trimmed !== '') {
-      return Number(trimmed);
-    }
-
-    // Parse variable references
-    if (Object.prototype.hasOwnProperty.call(this.variables, trimmed)) {
-      return this.variables[trimmed];
-    }
-
-    return trimmed;
+    return Array.from(this.elements.values());
   }
 }
