@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EnglishScript Local Development IDE</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #121212;
+      color: #ffffff;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      padding: 16px 24px;
+      background-color: #1e1e1e;
+      border-bottom: 1px solid #333333;
+    }
+    header h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #00ffcc;
+    }
+    .workspace {
+      display: flex;
+      flex: 1;
+      gap: 20px;
+      padding: 20px;
+      overflow: hidden;
+    }
+    .pane {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .pane h2 {
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #888888;
+    }
+    textarea {
+      flex: 1;
+      width: 100%;
+      background-color: #1e1e1e;
+      color: #00ffcc;
+      border: 1px solid #333333;
+      border-radius: 6px;
+      padding: 16px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      resize: none;
+      outline: none;
+    }
+    textarea:focus {
+      border-color: #007acc;
+    }
+    button#runBtn {
+      padding: 12px 20px;
+      background-color: #007acc;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    button#runBtn:hover {
+      background-color: #005999;
+    }
+    .canvas-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      background-color: #1e1e1e;
+      border: 1px solid #333333;
+      border-radius: 6px;
+      padding: 16px;
+      overflow: auto;
+    }
+    canvas {
+      border: 1px solid #444444;
+      background-color: #000000;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>EnglishScript Virtual Machine</h1>
+  </header>
+
+  <main class="workspace">
+    <section class="pane">
+      <h2>Source Editor</h2>
+      <textarea id="codeEditor" spellcheck="false">
+Create window titled "Clicker OS" size 500 x 280
+Set score to 0
+
+Draw box at 15, 15 size 470 x 250 filled with "#12131C" as cardBg
+Draw text "Score: 0" at 35, 50 colored "#00ffcc" as scoreDisplay
+
+Draw button "Tap (+1)" at 35, 90 size 120 x 45 colored "#ff0055" as tapBtn
+Draw button "Boost (+5)" at 170, 90 size 130 x 45 colored "#00aaff" as boostBtn
+Draw button "Reset" at 315, 90 size 110 x 45 colored "#33334e" as resetBtn
+
+On click tapBtn:
+    Increase score by 1
+    Set text of scoreDisplay to "Score: " + score
+End
+
+On click boostBtn:
+    Increase score by 5
+    Set text of scoreDisplay to "Score: " + score
+End
+
+On click resetBtn:
+    Set score to 0
+    Set text of scoreDisplay to "Score: 0"
+End
+      </textarea>
+      <button id="runBtn">Run Program</button>
+    </section>
+
+    <section class="pane">
+      <h2>Virtual Display</h2>
+      <div class="canvas-wrapper">
+        <canvas id="virtualScreen"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <script type="module">
+    import { EnglishVM } from './src/index.js';
+
+    const vm = new EnglishVM('virtualScreen');
+    const editor = document.getElementById('codeEditor');
+    const runBtn = document.getElementById('runBtn');
+
+    function runScript() {
+      try {
+        vm.parseAndRun(editor.value);
+      } catch (err) {
+        console.error('Execution Error:', err);
+      }
+    }
+
+    runBtn.addEventListener('click', runScript);
+    runScript();
+  </script>
+</body>
+</html>
