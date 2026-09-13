@@ -1,145 +1,82 @@
-// src/lexer.js
+export function parseCode(code) {
+  const lines = code.split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#'));
+  const ast = { config: null, body: [], events: {} };
+  let currentBlock = null;
 
-/**
- * Parses raw EnglishScript code into an Abstract Syntax Tree (AST) structure.
- * Returns an object with global configuration, top-level statements, and event blocks.
- */
-export function parseCode(sourceCode) {
-  const lines = sourceCode
-    .split('\n')
-    .map(line => line.trim())
-    .filter(line => line.length > 0 && !line.startsWith('#'));
-
-  const program = {
-    config: null,
-    body: [],
-    events: {}
-  };
-
-  let currentEventTarget = null;
-
-  for (const line of lines) {
-    // Handle block termination
-    if (line === 'End') {
-      currentEventTarget = null;
-      continue;
+  lines.forEach(line => {
+    // Window configuration
+    const winMatch = line.match(/^Create window titled "(.*?)" size (\d+) x (\d+)/i);
+    if (winMatch) {
+      ast.config = { title: winMatch[1], width: parseInt(winMatch[2]), height: parseInt(winMatch[3]) };
+      return;
     }
 
-    // Handle event block declarations (e.g., "On click myBtn:")
-    if (line.startsWith('On click')) {
-      const eventMatch = line.match(/^On click\s+(\w+):$/i);
-      if (eventMatch) {
-        currentEventTarget = eventMatch[1];
-        program.events[currentEventTarget] = { statements: [] };
-      }
-      continue;
+    // Tick block initialization
+    if (line.match(/^On tick:/i)) {
+      currentBlock = { type: 'tick', statements: [] };
+      ast.events['tick'] = currentBlock;
+      return;
     }
 
-    // Parse individual line statement
-    const statement = parseStatement(line, program);
+    // Click block initialization
+    const clickMatch = line.match(/^On click (\w+):/i);
+    if (clickMatch) {
+      currentBlock = { type: 'click', target: clickMatch[1], statements: [] };
+      ast.events[clickMatch[1]] = currentBlock;
+      return;
+    }
 
-    if (statement) {
-      if (currentEventTarget) {
-        program.events[currentEventTarget].statements.push(statement);
+    // Block termination
+    if (line.match(/^End$/i)) {
+      currentBlock = null;
+      return;
+    }
+
+    // Standard statement parsing
+    const stmt = parseStatement(line);
+    if (stmt) {
+      if (currentBlock) {
+        currentBlock.statements.push(stmt);
       } else {
-        program.body.push(statement);
+        ast.body.push(stmt);
       }
     }
-  }
+  });
 
-  return program;
+  return ast;
 }
 
-function parseStatement(line, program) {
-  // 1. Create window configuration: Create window titled "Title" size 500 x 350
-  let match = line.match(/^Create window titled "([^"]+)" size (\d+)\s*x\s*(\d+)$/i);
-  if (match) {
-    program.config = {
-      title: match[1],
-      width: parseInt(match[2], 10),
-      height: parseInt(match[3], 10)
-    };
-    return null;
-  }
+function parseStatement(line) {
+  let m = line.match(/^Set (\w+) to (.+)/i);
+  if (m) return { type: 'SET_VAR', name: m[1], expr: m[2] };
 
-  // 2. Set variable: Set count to 0
-  match = line.match(/^Set (\w+) to (.+)$/i);
-  if (match && !line.startsWith('Set text of')) {
+  m = line.match(/^Increase (\w+) by (\d+)/i);
+  if (m) return { type: 'INCREMENT_VAR', name: m[1], by: parseInt(m[2]) };
+
+  m = line.match(/^Set text of (\w+) to (.+)/i);
+  if (m) return { type: 'UPDATE_ELEMENT', elementId: m[1], expr: m[2] };
+
+  m = line.match(/^Draw box at (\d+), (\d+) size (\d+) x (\d+) filled with "([^"]+)" as (\w+)/i);
+  if (m) {
     return {
-      type: 'SET_VAR',
-      name: match[1],
-      value: match[2].trim()
+      type: 'CREATE_ELEMENT',
+      payload: { id: m[6], type: 'box', x: +m[1], y: +m[2], w: +m[3], h: +m[4], color: m[5] }
     };
   }
 
-  // 3. Increment variable: Increase count by 1
-  match = line.match(/^Increase (\w+) by (\d+)$/i);
-  if (match) {
+  m = line.match(/^Draw text "([^"]+)" at (\d+), (\d+) colored "([^"]+)" as (\w+)/i);
+  if (m) {
     return {
-      type: 'INCREMENT_VAR',
-      name: match[1],
-      by: parseInt(match[2], 10)
+      type: 'CREATE_ELEMENT',
+      payload: { id: m[5], type: 'text', text: m[1], x: +m[2], y: +m[3], color: m[4] }
     };
   }
 
-  // 4. Update element text: Set text of statusText to "Button Clicks: " + count
-  match = line.match(/^Set text of (\w+) to (.+)$/i);
-  if (match) {
+  m = line.match(/^Draw button "([^"]+)" at (\d+), (\d+) size (\d+) x (\d+) colored "([^"]+)" as (\w+)/i);
+  if (m) {
     return {
-      type: 'UPDATE_ELEMENT',
-      elementId: match[1],
-      value: match[2].trim()
-    };
-  }
-
-  // 5. Draw box primitive: Draw box at 20, 20 size 460 x 310 filled with "rgb(30, 30, 40)" as background
-  match = line.match(/^Draw box at (\d+),\s*(\d+) size (\d+)\s*x\s*(\d+) filled with "([^"]+)" as (\w+)$/i);
-  if (match) {
-    return {
-      type: 'CREATE_BOX',
-      payload: {
-        id: match[6],
-        type: 'box',
-        x: parseInt(match[1], 10),
-        y: parseInt(match[2], 10),
-        w: parseInt(match[3], 10),
-        h: parseInt(match[4], 10),
-        color: match[5]
-      }
-    };
-  }
-
-  // 6. Draw text primitive: Draw text "Title" at 40, 50 colored "white" as header
-  match = line.match(/^Draw text "([^"]+)" at (\d+),\s*(\d+) colored "([^"]+)" as (\w+)$/i);
-  if (match) {
-    return {
-      type: 'CREATE_TEXT',
-      payload: {
-        id: match[5],
-        type: 'text',
-        text: match[1],
-        x: parseInt(match[2], 10),
-        y: parseInt(match[3], 10),
-        color: match[4]
-      }
-    };
-  }
-
-  // 7. Draw button GUI element: Draw button "Click Me!" at 40, 130 size 140 x 45 colored "#ff0055" as myBtn
-  match = line.match(/^Draw button "([^"]+)" at (\d+),\s*(\d+) size (\d+)\s*x\s*(\d+) colored "([^"]+)" as (\w+)$/i);
-  if (match) {
-    return {
-      type: 'CREATE_BUTTON',
-      payload: {
-        id: match[7],
-        type: 'button',
-        text: match[1],
-        x: parseInt(match[2], 10),
-        y: parseInt(match[3], 10),
-        w: parseInt(match[4], 10),
-        h: parseInt(match[5], 10),
-        color: match[6]
-      }
+      type: 'CREATE_ELEMENT',
+      payload: { id: m[7], type: 'button', text: m[1], x: +m[2], y: +m[3], w: +m[4], h: +m[5], color: m[6] }
     };
   }
 
