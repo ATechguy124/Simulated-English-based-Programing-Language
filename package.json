@@ -1,0 +1,25 @@
+{
+  "name": "english-script-vm",
+  "version": "1.0.0",
+  "description": "An English-based programming language virtual machine and GUI engine running on HTML5 Canvas.",
+  "type": "module",
+  "main": "dist/engine.min.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "test": "vitest run"
+  },
+  "keywords": [
+    "dsl",
+    "programming-language",
+    "interpreter",
+    "canvas",
+    "virtual-machine"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "vitest": "^1.0.0"
+  }
+}
