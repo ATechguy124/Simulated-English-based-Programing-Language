@@ -1,0 +1,134 @@
+Create window titled "EnglishOS v3.0 Desktop" size 640 x 420
+
+# ==========================================
+# 1. DESKTOP & SYSTEM MEMORY INITIALIZATION
+# ==========================================
+Set currentApp to "Desktop"
+Set menuOpen to 0
+Set sysTime to 0
+
+# Desktop Background & Desktop Icons
+Draw box at 0, 0 size 640 x 420 filled with "#090d16" as desktopBg
+Draw button "📁 Files" at 20, 20 size 90 x 70 colored "#1e293b" as iconFiles
+Draw button "⚙️ Settings" at 20, 105 size 90 x 70 colored "#1e293b" as iconSettings
+Draw button "📝 Notepad" at 20, 190 size 90 x 70 colored "#1e293b" as iconNotepad
+
+# ==========================================
+# 2. APPLICATION WINDOW: FILES EXPLORER
+# ==========================================
+Draw box at 130, 20 size 490 x 350 filled with "#111827" as winFiles
+Draw text "File Explorer — /root" at 150, 50 colored "#38bdf8" as filesTitle
+Draw text "• Document_1.txt (4 KB)" at 150, 90 colored "#94a3b8" as file1
+Draw text "• System_Core.dll (128 KB)" at 150, 120 colored "#94a3b8" as file2
+Draw text "• User_Config.json (2 KB)" at 150, 150 colored "#94a3b8" as file3
+
+# ==========================================
+# 3. APPLICATION WINDOW: SYSTEM SETTINGS
+# ==========================================
+Draw box at 130, 20 size 490 x 350 filled with "#0f172a" as winSettings
+Draw text "System Configuration" at 150, 50 colored "#f43f5e" as setHeader
+Draw text "Theme: Dark Mode" at 150, 90 colored "#cbd5e1" as themeText
+Draw button "Toggle Dark Mode" at 150, 115 size 160 x 35 colored "#3b82f6" as toggleThemeBtn
+Draw text "Resolution: 640x420" at 150, 180 colored "#cbd5e1" as resText
+
+# ==========================================
+# 4. APPLICATION WINDOW: NOTEPAD UTILITY
+# ==========================================
+Draw box at 130, 20 size 490 x 350 filled with "#1e1e2e" as winNotepad
+Draw text "Quick Notepad v1.0" at 150, 50 colored "#a78bfa" as noteTitle
+Draw text "Note Content: EnglishScript running inside Canvas!" at 150, 90 colored "#f8fafc" as noteBody
+Draw button "Append Timestamp" at 150, 130 size 180 x 35 colored "#7c3aed" as appendBtn
+
+# Initially hide sub-windows to keep desktop focused
+Hide winSettings
+Hide winNotepad
+
+# ==========================================
+# 5. SYSTEM TASKBAR & START MENU POP-OVER
+# ==========================================
+Draw box at 0, 380 size 640 x 40 filled with "#020617" as taskbar
+Draw button "⌘ Start" at 8, 385 size 80 x 30 colored "#2563eb" as startBtn
+Draw text "EnglishOS Core" at 100, 404 colored "#64748b" as taskbarStatus
+Draw text "00:00" at 580, 404 colored "#f8fafc" as clockDisplay
+
+# Start Menu Dropdown Overlay
+Draw box at 8, 220 size 180 x 155 filled with "#1e293b" as startMenu
+Draw button "Open Explorer" at 18, 230 size 160 x 32 colored "#334155" as menuFilesBtn
+Draw button "Open Settings" at 18, 267 size 160 x 32 colored "#334155" as menuSetBtn
+Draw button "Open Notepad" at 18, 304 size 160 x 32 colored "#334155" as menuNoteBtn
+Draw button "Lock Screen" at 18, 341 size 160 x 32 colored "#991b1b" as menuLockBtn
+Hide startMenu
+
+# ==========================================
+# 6. EVENT INTERACTION HANDLERS
+# ==========================================
+# Taskbar Start Menu Toggle
+On click startBtn:
+    Show startMenu
+End
+
+# Desktop Shortcut Click Handlers
+On click iconFiles:
+    Show winFiles
+    Hide winSettings
+    Hide winNotepad
+    Hide startMenu
+    Set text of taskbarStatus to "App Active: File Explorer"
+End
+
+On click iconSettings:
+    Hide winFiles
+    Show winSettings
+    Hide winNotepad
+    Hide startMenu
+    Set text of taskbarStatus to "App Active: Settings"
+End
+
+On click iconNotepad:
+    Hide winFiles
+    Hide winSettings
+    Show winNotepad
+    Hide startMenu
+    Set text of taskbarStatus to "App Active: Quick Notepad"
+End
+
+# Start Menu Actions
+On click menuFilesBtn:
+    Show winFiles
+    Hide winSettings
+    Hide winNotepad
+    Hide startMenu
+End
+
+On click menuSetBtn:
+    Hide winFiles
+    Show winSettings
+    Hide winNotepad
+    Hide startMenu
+End
+
+On click menuNoteBtn:
+    Hide winFiles
+    Hide winSettings
+    Show winNotepad
+    Hide startMenu
+End
+
+On click menuLockBtn:
+    Hide winFiles
+    Hide winSettings
+    Hide winNotepad
+    Hide startMenu
+    Set text of taskbarStatus to "System Locked"
+End
+
+# App Internal Interactivity
+On click appendBtn:
+    Set text of noteBody to "Note Content: Modified at " + sysTime + "s mark."
+End
+
+# Persistent System Clock Update
+On tick:
+    Increase sysTime by 1
+    Set text of clockDisplay to sysTime + "s"
+End
