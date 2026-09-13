@@ -1,74 +1,38 @@
-// src/renderer.js
-
-/**
- * Handles all 2D canvas drawing operations for EnglishScript UI elements.
- */
-export class CanvasRenderer {
+export class Renderer {
   constructor(canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
   }
 
-  // Resizes the target canvas element
   resize(width, height) {
     this.canvas.width = width;
     this.canvas.height = height;
   }
 
-  // Clears the viewport frame
-  clear() {
+  render(elements) {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-  }
 
-  // Iterates over UI memory state and renders each primitive/element
-  render(uiElements) {
-    this.clear();
+    elements.forEach(el => {
+      if (el.hidden) return;
 
-    for (const element of uiElements) {
-      switch (element.type) {
-        case 'box':
-          this.drawBox(element);
-          break;
-        case 'text':
-          this.drawText(element);
-          break;
-        case 'button':
-          this.drawButton(element);
-          break;
+      if (el.type === 'box') {
+        this.ctx.fillStyle = el.color;
+        this.ctx.fillRect(el.x, el.y, el.w, el.h);
+      } else if (el.type === 'text') {
+        this.ctx.fillStyle = el.color;
+        this.ctx.font = '14px system-ui, sans-serif';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText(el.text, el.x, el.y);
+      } else if (el.type === 'button') {
+        this.ctx.fillStyle = el.color;
+        this.ctx.fillRect(el.x, el.y, el.w, el.h);
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.font = 'bold 13px system-ui, sans-serif';
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+        this.ctx.fillText(el.text, el.x + el.w / 2, el.y + el.h / 2);
+        this.ctx.textAlign = 'left';
       }
-    }
-  }
-
-  // Renders filled rectangle primitive
-  drawBox(box) {
-    this.ctx.fillStyle = box.color || '#333333';
-    this.ctx.fillRect(box.x, box.y, box.w, box.h);
-  }
-
-  // Renders text block primitive
-  drawText(text) {
-    this.ctx.fillStyle = text.color || '#ffffff';
-    this.ctx.font = '16px monospace';
-    this.ctx.textAlign = 'left';
-    this.ctx.textBaseline = 'alphabetic';
-    this.ctx.fillText(text.text, text.x, text.y);
-  }
-
-  // Renders interactive button with centered text label
-  drawButton(btn) {
-    // Draw button background
-    this.ctx.fillStyle = btn.color || '#007acc';
-    this.ctx.fillRect(btn.x, btn.y, btn.w, btn.h);
-
-    // Draw button label centered inside boundaries
-    this.ctx.fillStyle = '#ffffff';
-    this.ctx.font = 'bold 14px sans-serif';
-    this.ctx.textAlign = 'center';
-    this.ctx.textBaseline = 'middle';
-    this.ctx.fillText(btn.text, btn.x + btn.w / 2, btn.y + btn.h / 2);
-
-    // Reset alignment settings for downstream draw calls
-    this.ctx.textAlign = 'left';
-    this.ctx.textBaseline = 'alphabetic';
+    });
   }
 }
