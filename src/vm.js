@@ -1,4 +1,4 @@
-  export class VM {
+export class VM {
   constructor() {
     this.state = {};
     this.elements = new Map();
@@ -10,14 +10,13 @@
   }
 
   evaluate(expr) {
-    const raw = expr.trim();
-    // Evaluate literal string concatenation and variable interpolation
+    const raw = String(expr).trim();
     const parts = raw.split('+').map(p => p.trim());
     return parts.map(part => {
       if (part.startsWith('"') && part.endsWith('"')) {
         return part.slice(1, -1);
       }
-      if (this.state.hasOwnProperty(part)) {
+      if (Object.prototype.hasOwnProperty.call(this.state, part)) {
         return this.state[part];
       }
       return part;
@@ -28,7 +27,7 @@
     switch (stmt.type) {
       case 'SET_VAR': {
         const val = this.evaluate(stmt.expr);
-        this.state[stmt.name] = isNaN(val) ? val : Number(val);
+        this.state[stmt.name] = isNaN(val) || val === '' ? val : Number(val);
         break;
       }
       case 'INCREMENT_VAR': {
@@ -42,8 +41,19 @@
       }
       case 'UPDATE_ELEMENT': {
         if (this.elements.has(stmt.elementId)) {
-          const el = this.elements.get(stmt.elementId);
-          el.text = this.evaluate(stmt.expr);
+          this.elements.get(stmt.elementId).text = this.evaluate(stmt.expr);
+        }
+        break;
+      }
+      case 'UPDATE_COLOR': {
+        if (this.elements.has(stmt.elementId)) {
+          this.elements.get(stmt.elementId).color = stmt.color;
+        }
+        break;
+      }
+      case 'SET_VISIBILITY': {
+        if (this.elements.has(stmt.elementId)) {
+          this.elements.get(stmt.elementId).hidden = !stmt.visible;
         }
         break;
       }
@@ -51,6 +61,6 @@
   }
 
   getRenderList() {
-    return Array.from(this.elements.values());
+    return Array.from(this.elements.values()).filter(el => !el.hidden);
   }
 }
