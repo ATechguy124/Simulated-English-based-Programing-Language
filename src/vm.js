@@ -61,6 +61,6 @@ export class VM {
   }
 
   getRenderList() {
-    return Array.from(this.elements.values()).filter(el => !el.hidden);
+    return Array.from(this.elements.values());
   }
 }
