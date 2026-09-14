@@ -64,7 +64,7 @@ function parseStatement(line) {
   if (m) {
     return {
       type: 'CREATE_ELEMENT',
-      payload: { id: m[6], type: 'box', x: +m[1], y: +m[2], w: +m[3], h: +m[4], color: m[5], hidden: false }
+      payload: { id: m[6], type: 'box', x: +m[1], y: +m[2], w: +m[3], h: +m[4], color: m[5], hidden: false, draggable: true }
     };
   }
 
