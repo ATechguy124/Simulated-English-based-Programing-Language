@@ -8,7 +8,11 @@ export class EnglishVM {
     this.canvas = document.getElementById(canvasId);
     this.renderer = new Renderer(this.canvas);
     this.vm = new VM();
-    this.events = new EventManager(this.canvas, (targetId) => this.handleEvent(targetId));
+    this.events = new EventManager(
+      this.canvas,
+      (targetId) => this.handleEvent(targetId),
+      () => this.render()
+    );
     this.program = null;
     this.clockInterval = null;
   }
@@ -26,6 +30,7 @@ export class EnglishVM {
     }
 
     this.executeStatements(this.program.body);
+    this.events.updateRenderList(this.vm.getRenderList());
     this.render();
 
     if (this.program.events['tick']) {
@@ -48,9 +53,7 @@ export class EnglishVM {
   }
 
   render() {
-    const list = this.vm.getRenderList();
-    this.events.updateRenderList(list);
-    this.renderer.render(list);
+    this.renderer.render(this.events.currentRenderList);
   }
 }
 
