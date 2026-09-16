@@ -60,6 +60,15 @@ function parseStatement(line) {
   m = line.match(/^Show (\w+)/i);
   if (m) return { type: 'SET_VISIBILITY', elementId: m[1], visible: true };
 
+  m = line.match(/^Launch app "([^"]+)"/i);
+  if (m) return { type: 'LAUNCH_APP', appName: m[1] };
+
+  m = line.match(/^Run python "([^"]+)" as (\w+)/i);
+  if (m) return { type: 'RUN_PYTHON', code: m[1], outputVar: m[2] };
+
+  m = line.match(/^Run python file "([^"]+)" as (\w+)/i);
+  if (m) return { type: 'RUN_PYTHON_FILE', fileName: m[1], outputVar: m[2] };
+
   m = line.match(/^Draw box at (\d+), (\d+) size (\d+) x (\d+) filled with "([^"]+)" as (\w+)/i);
   if (m) {
     return {
