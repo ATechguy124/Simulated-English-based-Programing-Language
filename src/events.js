@@ -31,7 +31,6 @@ export class EventManager {
       const height = el.h || 30;
 
       if (x >= el.x && x <= el.x + width && y >= el.y && y <= el.y + height) {
-        // Bring element to the front of the render stack (Z-index layering)
         this.currentRenderList.splice(i, 1);
         this.currentRenderList.push(el);
 
