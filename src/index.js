@@ -15,6 +15,21 @@ export class EnglishVM {
     );
     this.program = null;
     this.clockInterval = null;
+
+    this.vm.onLaunchApp = (appName) => this.loadApp(appName);
+    this.vm.onRunPyFile = (fileName, outputVar) => this.loadAndRunPy(fileName, outputVar);
+
+    this.initPyodide();
+  }
+
+  async initPyodide() {
+    if (typeof loadPyodide !== 'undefined' && !window.pyodide) {
+      try {
+        window.pyodide = await loadPyodide();
+      } catch (err) {
+        console.error("Failed to initialize Pyodide:", err);
+      }
+    }
   }
 
   parseAndRun(sourceCode) {
@@ -38,6 +53,36 @@ export class EnglishVM {
         this.executeStatements(this.program.events['tick'].statements);
         this.render();
       }, 1000);
+    }
+  }
+
+  async loadApp(appName) {
+    const repoBase = 'https://cdn.jsdelivr.net/gh/ATechguy124/Simulated-English-based-Programing-Language@main/examples';
+    try {
+      const response = await fetch(`${repoBase}/${appName}.eng`);
+      if (!response.ok) throw new Error(`App file '${appName}.eng' not found.`);
+      const sourceCode = await response.text();
+      this.parseAndRun(sourceCode);
+    } catch (err) {
+      console.error('Failed to load EnglishScript app:', err.message);
+    }
+  }
+
+  async loadAndRunPy(fileName, outputVar) {
+    const repoBase = 'https://cdn.jsdelivr.net/gh/ATechguy124/Simulated-English-based-Programing-Language@main/examples';
+    try {
+      const response = await fetch(`${repoBase}/${fileName}.py`);
+      if (!response.ok) throw new Error(`File '${fileName}.py' not found.`);
+      const pyCode = await response.text();
+
+      if (window.pyodide) {
+        const res = window.pyodide.runPython(pyCode);
+        this.vm.state[outputVar] = res !== undefined ? String(res) : "OK";
+        this.render();
+      }
+    } catch (err) {
+      this.vm.state[outputVar] = "Fetch Error: " + err.message;
+      this.render();
     }
   }
 
