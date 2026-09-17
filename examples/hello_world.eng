@@ -1,6 +1,0 @@
-Create window titled "Hello World OS" size 450 x 220
-
-Draw box at 10, 10 size 430 x 200 filled with "rgb(24, 24, 36)" as bg
-Draw text "Welcome to EnglishScript!" at 30, 50 colored "#ffffff" as title
-Draw text "Status: Virtual System Online" at 30, 90 colored "#00ffcc" as status
-Draw text "System Memory: Ready" at 30, 120 colored "#aaaaff" as memStatus
