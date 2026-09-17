@@ -8,18 +8,19 @@ Draw text "EnglishOS v5.2 Enterprise" at 25, 28 colored "#475569" as desktopHead
 
 # Left Navigation Dock Panel
 Draw box at 20, 50 size 150 x 310 filled with "#131c2e" as dockBg
-Draw text "APPLICATIONS" at 35, 72 colored "#64748b" as dockTitle
+Draw text "APPLICATIONS" at 35, 70 colored "#64748b" as dockTitle
 
-Draw button "🧮 Calculator" at 30, 90 size 130 x 42 colored "#1e293b" as appCalcIcon
-Draw button "💻 Diagnostics" at 30, 142 size 130 x 42 colored "#1e293b" as appSysIcon
-Draw button "🐍 Python WASM" at 30, 194 size 130 x 42 colored "#1e293b" as appPyIcon
+Draw button "🧮 Calculator" at 30, 88 size 130 x 38 colored "#1e293b" as appCalcIcon
+Draw button "🖥️ Terminal" at 30, 134 size 130 x 38 colored "#1e293b" as appTermIcon
+Draw button "💻 Diagnostics" at 30, 180 size 130 x 38 colored "#1e293b" as appSysIcon
+Draw button "🐍 Python WASM" at 30, 226 size 130 x 38 colored "#1e293b" as appPyIcon
 
 # Center Widget Cards
 Draw box at 185, 50 size 435 x 180 filled with "#131c2e" as cardMain
 Draw text "System Workspace" at 205, 78 colored "#38bdf8" as widgetTitle
 Draw text "Engine State: EnglishScript WASM Active" at 205, 110 colored "#94a3b8" as w1
 Draw text "Python Runtime: Pyodide v0.26 Interop Ready" at 205, 135 colored "#94a3b8" as w2
-Draw text "Memory Allocation: Dynamic Virtual Registers" at 205, 160 colored "#94a3b8" as w3
+Draw text "Terminal Shell: Bash Emulated Sandbox" at 205, 160 colored "#94a3b8" as w3
 
 Draw box at 185, 242 size 435 x 118 filled with "#131c2e" as cardStats
 Draw text "Performance Monitor" at 205, 266 colored "#10b981" as perfTitle
@@ -32,8 +33,9 @@ Draw text "System Online" at 100, 398 colored "#10b981" as sysStatus
 Draw text "Uptime: 0s" at 540, 398 colored "#f8fafc" as sysClock
 
 # Overlay Start Menu
-Draw box at 12, 210 size 170 x 160 filled with "#1e293b" as startMenu
-Draw button "Calculator" at 22, 220 size 150 x 30 colored "#334155" as menuCalcBtn
+Draw box at 12, 175 size 170 x 195 filled with "#1e293b" as startMenu
+Draw button "Calculator" at 22, 185 size 150 x 30 colored "#334155" as menuCalcBtn
+Draw button "Terminal" at 22, 220 size 150 x 30 colored "#334155" as menuTermBtn
 Draw button "Diagnostics" at 22, 255 size 150 x 30 colored "#334155" as menuSysBtn
 Draw button "Python App" at 22, 290 size 150 x 30 colored "#334155" as menuPyBtn
 Draw button "Dismiss" at 22, 330 size 150 x 25 colored "#e11d48" as menuCloseBtn
@@ -54,6 +56,14 @@ End
 
 On click menuCalcBtn:
     Launch app "calculator"
+End
+
+On click appTermIcon:
+    Launch app "terminal"
+End
+
+On click menuTermBtn:
+    Launch app "terminal"
 End
 
 On click appSysIcon:
