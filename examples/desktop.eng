@@ -1,40 +1,45 @@
-Create window titled "EnglishOS v5.0 Enterprise" size 640 x 420
+Create window titled "EnglishOS Pro Workspace" size 640 x 420
 
-# --- SYSTEM STATE ---
 Set sysUptime to 0
-Set activeApp to "Desktop Workspace"
 
-# --- DESKTOP ENVIRONMENT ---
-Draw box at 0, 0 size 640 x 420 filled with "#090d16" as desktopBg
-Draw text "EnglishOS v5.0 — Multi-App Workstation Environment" at 20, 25 colored "#334155" as desktopHeader
+# Wallpaper / Glass Background
+Draw box at 0, 0 size 640 x 420 filled with "#0b0f19" as desktopBg
+Draw text "EnglishOS v5.2 Enterprise" at 25, 28 colored "#475569" as desktopHeader
 
-# Desktop Quick Launch Shortcuts
-Draw button "🧮 Calculator" at 30, 60 size 130 x 70 colored "#1e293b" as appCalcIcon
-Draw button "💻 Diagnostics" at 30, 150 size 130 x 70 colored "#1e293b" as appSysIcon
-Draw button "🐍 Python App" at 30, 240 size 130 x 70 colored "#1e293b" as appPyIcon
+# Left Navigation Dock Panel
+Draw box at 20, 50 size 150 x 310 filled with "#131c2e" as dockBg
+Draw text "APPLICATIONS" at 35, 72 colored "#64748b" as dockTitle
 
-# System Information Widget
-Draw box at 180, 60 size 430 x 300 filled with "#111827" as widgetBg
-Draw text "System Overview" at 200, 90 colored "#38bdf8" as widgetTitle
-Draw text "Status: System Nominal" at 200, 125 colored "#22c35e" as widgetStatus
-Draw text "Engine: EnglishScript v5.0" at 200, 155 colored "#cbd5e1" as widgetEngine
-Draw text "Active Program: Desktop Shell" at 200, 185 colored "#94a3b8" as widgetApp
+Draw button "🧮 Calculator" at 30, 90 size 130 x 42 colored "#1e293b" as appCalcIcon
+Draw button "💻 Diagnostics" at 30, 142 size 130 x 42 colored "#1e293b" as appSysIcon
+Draw button "🐍 Python WASM" at 30, 194 size 130 x 42 colored "#1e293b" as appPyIcon
 
-# --- SYSTEM TASKBAR ---
-Draw box at 0, 380 size 640 x 40 filled with "#020617" as taskbar
-Draw button "⌘ Start" at 8, 385 size 80 x 30 colored "#2563eb" as startBtn
-Draw text "System Active" at 105, 404 colored "#64748b" as sysTray
-Draw text "Uptime: 0s" at 530, 404 colored "#f8fafc" as sysClock
+# Center Widget Cards
+Draw box at 185, 50 size 435 x 180 filled with "#131c2e" as cardMain
+Draw text "System Workspace" at 205, 78 colored "#38bdf8" as widgetTitle
+Draw text "Engine State: EnglishScript WASM Active" at 205, 110 colored "#94a3b8" as w1
+Draw text "Python Runtime: Pyodide v0.26 Interop Ready" at 205, 135 colored "#94a3b8" as w2
+Draw text "Memory Allocation: Dynamic Virtual Registers" at 205, 160 colored "#94a3b8" as w3
 
-# Start Menu Dropdown
-Draw box at 8, 200 size 170 x 175 filled with "#1e293b" as startMenu
-Draw button "Launch Calculator" at 18, 210 size 150 x 32 colored "#334155" as menuCalcBtn
-Draw button "Launch Diagnostics" at 18, 250 size 150 x 32 colored "#334155" as menuSysBtn
-Draw button "Launch Python App" at 18, 290 size 150 x 32 colored "#334155" as menuPyBtn
-Draw button "Close Menu" at 18, 330 size 150 x 32 colored "#be123c" as menuCloseBtn
+Draw box at 185, 242 size 435 x 118 filled with "#131c2e" as cardStats
+Draw text "Performance Monitor" at 205, 266 colored "#10b981" as perfTitle
+Draw text "Status: Nominal" at 205, 298 colored "#cbd5e1" as perfStatus
+
+# Bottom Taskbar & Start Shell
+Draw box at 0, 375 size 640 x 45 filled with "#030712" as taskbar
+Draw button "⚡ Menu" at 12, 383 size 75 x 30 colored "#2563eb" as startBtn
+Draw text "System Online" at 100, 398 colored "#10b981" as sysStatus
+Draw text "Uptime: 0s" at 540, 398 colored "#f8fafc" as sysClock
+
+# Overlay Start Menu
+Draw box at 12, 210 size 170 x 160 filled with "#1e293b" as startMenu
+Draw button "Calculator" at 22, 220 size 150 x 30 colored "#334155" as menuCalcBtn
+Draw button "Diagnostics" at 22, 255 size 150 x 30 colored "#334155" as menuSysBtn
+Draw button "Python App" at 22, 290 size 150 x 30 colored "#334155" as menuPyBtn
+Draw button "Dismiss" at 22, 330 size 150 x 25 colored "#e11d48" as menuCloseBtn
 Hide startMenu
 
-# --- EVENT HANDLERS ---
+# Event Handlers
 On click startBtn:
     Show startMenu
 End
@@ -67,7 +72,6 @@ On click menuPyBtn:
     Launch app "python_app"
 End
 
-# --- SYSTEM HEARTBEAT ---
 On tick:
     Increase sysUptime by 1
     Set text of sysClock to "Uptime: " + sysUptime + "s"
