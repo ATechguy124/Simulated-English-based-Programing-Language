@@ -1,97 +1,93 @@
-export function parseCode(code) {
-  const lines = code.split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#'));
-  const ast = { config: null, body: [], events: {} };
-  let currentBlock = null;
+export class VM {
+  constructor() {
+    this.state = {};
+    this.elements = new Map();
+    this.onLaunchApp = null;
+    this.onRunPyFile = null;
+  }
 
-  lines.forEach(line => {
-    const winMatch = line.match(/^Create window titled "(.*?)" size (\d+) x (\d+)/i);
-    if (winMatch) {
-      ast.config = { title: winMatch[1], width: parseInt(winMatch[2]), height: parseInt(winMatch[3]) };
-      return;
-    }
+  reset() {
+    this.state = {};
+    this.elements.clear();
+  }
 
-    if (line.match(/^On tick:/i)) {
-      currentBlock = { type: 'tick', statements: [] };
-      ast.events['tick'] = currentBlock;
-      return;
-    }
+  evaluate(expr) {
+    const raw = String(expr).trim();
+    const parts = raw.split('+').map(p => p.trim());
+    return parts.map(part => {
+      if (part.startsWith('"') && part.endsWith('"')) {
+        return part.slice(1, -1);
+      }
+      if (Object.prototype.hasOwnProperty.call(this.state, part)) {
+        return this.state[part];
+      }
+      return part;
+    }).join('');
+  }
 
-    const clickMatch = line.match(/^On click (\w+):/i);
-    if (clickMatch) {
-      currentBlock = { type: 'click', target: clickMatch[1], statements: [] };
-      ast.events[clickMatch[1]] = currentBlock;
-      return;
-    }
-
-    if (line.match(/^End$/i)) {
-      currentBlock = null;
-      return;
-    }
-
-    const stmt = parseStatement(line);
-    if (stmt) {
-      if (currentBlock) {
-        currentBlock.statements.push(stmt);
-      } else {
-        ast.body.push(stmt);
+  execute(stmt) {
+    switch (stmt.type) {
+      case 'SET_VAR': {
+        const val = this.evaluate(stmt.expr);
+        this.state[stmt.name] = isNaN(val) || val === '' ? val : Number(val);
+        break;
+      }
+      case 'INCREMENT_VAR': {
+        const current = Number(this.state[stmt.name]) || 0;
+        this.state[stmt.name] = current + stmt.by;
+        break;
+      }
+      case 'CREATE_ELEMENT': {
+        this.elements.set(stmt.payload.id, { ...stmt.payload });
+        break;
+      }
+      case 'UPDATE_ELEMENT': {
+        if (this.elements.has(stmt.elementId)) {
+          this.elements.get(stmt.elementId).text = this.evaluate(stmt.expr);
+        }
+        break;
+      }
+      case 'UPDATE_COLOR': {
+        if (this.elements.has(stmt.elementId)) {
+          this.elements.get(stmt.elementId).color = stmt.color;
+        }
+        break;
+      }
+      case 'SET_VISIBILITY': {
+        if (this.elements.has(stmt.elementId)) {
+          this.elements.get(stmt.elementId).hidden = !stmt.visible;
+        }
+        break;
+      }
+      case 'LAUNCH_APP': {
+        if (this.onLaunchApp) {
+          this.onLaunchApp(stmt.appName);
+        }
+        break;
+      }
+      case 'RUN_PYTHON': {
+        if (window.pyodide) {
+          try {
+            const result = window.pyodide.runPython(stmt.code);
+            this.state[stmt.outputVar] = result !== undefined ? String(result) : "OK";
+          } catch (err) {
+            this.state[stmt.outputVar] = "PyError: " + err.message;
+          }
+        } else {
+          this.state[stmt.outputVar] = "Pyodide Runtime Unavailable";
+        }
+        break;
+      }
+      case 'RUN_PYTHON_FILE': {
+        if (this.onRunPyFile) {
+          this.onRunPyFile(stmt.fileName, stmt.outputVar);
+        }
+        break;
       }
     }
-  });
-
-  return ast;
-}
-
-function parseStatement(line) {
-  let m = line.match(/^Set (\w+) to (.+)/i);
-  if (m) return { type: 'SET_VAR', name: m[1], expr: m[2] };
-
-  m = line.match(/^Increase (\w+) by (\d+)/i);
-  if (m) return { type: 'INCREMENT_VAR', name: m[1], by: parseInt(m[2]) };
-
-  m = line.match(/^Set text of (\w+) to (.+)/i);
-  if (m) return { type: 'UPDATE_ELEMENT', elementId: m[1], expr: m[2] };
-
-  m = line.match(/^Set color of (\w+) to "([^"]+)"/i);
-  if (m) return { type: 'UPDATE_COLOR', elementId: m[1], color: m[2] };
-
-  m = line.match(/^Hide (\w+)/i);
-  if (m) return { type: 'SET_VISIBILITY', elementId: m[1], visible: false };
-
-  m = line.match(/^Show (\w+)/i);
-  if (m) return { type: 'SET_VISIBILITY', elementId: m[1], visible: true };
-
-  m = line.match(/^Launch app "([^"]+)"/i);
-  if (m) return { type: 'LAUNCH_APP', appName: m[1] };
-
-  m = line.match(/^Run python "([^"]+)" as (\w+)/i);
-  if (m) return { type: 'RUN_PYTHON', code: m[1], outputVar: m[2] };
-
-  m = line.match(/^Run python file "([^"]+)" as (\w+)/i);
-  if (m) return { type: 'RUN_PYTHON_FILE', fileName: m[1], outputVar: m[2] };
-
-  m = line.match(/^Draw box at (\d+), (\d+) size (\d+) x (\d+) filled with "([^"]+)" as (\w+)/i);
-  if (m) {
-    return {
-      type: 'CREATE_ELEMENT',
-      payload: { id: m[6], type: 'box', x: +m[1], y: +m[2], w: +m[3], h: +m[4], color: m[5], hidden: false, draggable: true }
-    };
   }
 
-  m = line.match(/^Draw text "([^"]+)" at (\d+), (\d+) colored "([^"]+)" as (\w+)/i);
-  if (m) {
-    return {
-      type: 'CREATE_ELEMENT',
-      payload: { id: m[5], type: 'text', text: m[1], x: +m[2], y: +m[3], color: m[4], hidden: false }
-    };
+  getRenderList() {
+    return Array.from(this.elements.values());
   }
-
-  m = line.match(/^Draw button "([^"]+)" at (\d+), (\d+) size (\d+) x (\d+) colored "([^"]+)" as (\w+)/i);
-  if (m) {
-    return {
-      type: 'CREATE_ELEMENT',
-      payload: { id: m[7], type: 'button', text: m[1], x: +m[2], y: +m[3], w: +m[4], h: +m[5], color: m[6], hidden: false }
-    };
-  }
-
-  return null;
 }
