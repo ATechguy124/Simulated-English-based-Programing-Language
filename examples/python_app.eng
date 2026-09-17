@@ -1,0 +1,29 @@
+Create window titled "Python Execution Workbench" size 640 x 420
+
+Set pyResult to "Awaiting execution..."
+
+Draw box at 0, 0 size 640 x 420 filled with "#0f172a" as bg
+Draw box at 30, 40 size 580 x 340 filled with "#1e293b" as frame
+Draw text "🐍 Python WASM Interpreter" at 50, 70 colored "#38bdf8" as title
+
+Draw text "Output Console:" at 50, 110 colored "#cbd5e1" as label
+Draw box at 50, 130 size 540 x 80 filled with "#020617" as consoleBg
+Draw text "Result: Idle" at 65, 170 colored "#4ade80" as consoleText
+
+Draw button "Run Inline Python" at 50, 240 size 180 x 40 colored "#2563eb" as btnInline
+Draw button "Run Python File" at 250, 240 size 180 x 40 colored "#0d9488" as btnFile
+Draw button "Return to Desktop" at 450, 240 size 140 x 40 colored "#be123c" as btnHome
+
+On click btnInline:
+    Run python "import math; f'Square Root of 144 is {math.sqrt(144)}'" as pyResult
+    Set text of consoleText to "Result: " + pyResult
+End
+
+On click btnFile:
+    Run python file "math_engine" as pyResult
+    Set text of consoleText to "Result: " + pyResult
+End
+
+On click btnHome:
+    Launch app "desktop"
+End
