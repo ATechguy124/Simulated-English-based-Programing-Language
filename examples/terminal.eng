@@ -1,55 +1,74 @@
 Create window titled "EnglishOS Terminal" size 640 x 420
 
-Set termOutput1 to "EnglishOS Shell [v1.0.0 WASM]"
-Set termOutput2 to "Type or select a command action below."
-Set termOutput3 to "> status"
-Set termOutput4 to "System status: OK"
-
-# Window Frame
+# Window Frame & Layout
 Draw box at 0, 0 size 640 x 420 filled with "#020617" as bg
 Draw box at 20, 20 size 600 x 315 filled with "#090d16" as termScreen
 
-# Terminal Window Controls
+# Terminal Window Header
 Draw box at 20, 20 size 600 x 30 filled with "#1e293b" as termHeader
 Draw text "root@english-os:~#" at 35, 35 colored "#94a3b8" as headerText
 
-# Terminal Output Lines
-Draw text "EnglishOS Shell [v1.0.0 WASM]" at 35, 70 colored "#22c55e" as line1
-Draw text "Type or select a command action below." at 35, 100 colored "#64748b" as line2
-Draw text "> system --info" at 35, 130 colored "#38bdf8" as line3
-Draw text "Ready." at 35, 160 colored "#f8fafc" as line4
+# Terminal Display Lines
+Draw text "EnglishOS Shell [v1.1.0 CLI Extended]" at 35, 65 colored "#22c55e" as line1
+Draw text "Type or select a command action below." at 35, 95 colored "#64748b" as line2
+Draw text "> system --ready" at 35, 125 colored "#38bdf8" as line3
+Draw text "Ready." at 35, 155 colored "#f8fafc" as line4
+Draw text "" at 35, 185 colored "#a855f7" as line5
+Draw text "" at 35, 215 colored "#e2e8f0" as line6
 
-# Quick Command Bar
-Draw button "> help" at 20, 350 size 90 x 38 colored "#1e293b" as btnHelp
-Draw button "> sysinfo" at 120, 350 size 95 x 38 colored "#1e293b" as btnSys
-Draw button "> python" at 225, 350 size 95 x 38 colored "#1e293b" as btnPy
-Draw button "> clear" at 330, 350 size 85 x 38 colored "#be123c" as btnClear
-Draw button "Exit to Desktop" at 430, 350 size 190 x 38 colored "#0284c7" as btnHome
+# Command Action Buttons
+Draw button "nano" at 20, 345 size 80 x 38 colored "#1e293b" as btnNano
+Draw button "apt-get" at 110, 345 size 90 x 38 colored "#1e293b" as btnApt
+Draw button "sysinfo" at 210, 345 size 90 x 38 colored "#1e293b" as btnSys
+Draw button "python" at 310, 345 size 85 x 38 colored "#1e293b" as btnPy
+Draw button "clear" at 405, 345 size 70 x 38 colored "#be123c" as btnClear
+Draw button "Exit" at 485, 345 size 135 x 38 colored "#0284c7" as btnHome
 
 # --- EVENT HANDLERS ---
-On click btnHelp:
-    Set text of line2 to "> help"
-    Set text of line3 to "Commands: sysinfo, python, clear, exit"
-    Set text of line4 to "Execute commands via shortcut keys."
+On click btnNano:
+    Set text of line1 to "  GNU nano 7.2               app.eng                 "
+    Set text of line2 to "Create window titled 'Nano App' size 640 x 420"
+    Set text of line3 to "Set value to 100"
+    Set text of line4 to "Draw box at 0, 0 size 640 x 420 filled with '#0f172a'"
+    Set text of line5 to "^G Get Help  ^O WriteOut  ^W Where Is  ^X Exit"
+    Set text of line6 to "[ Wrote 4 lines to app.eng ]"
+End
+
+On click btnApt:
+    Set text of line1 to "> sudo apt-get update && apt-get install python3-pkg"
+    Set text of line2 to "Hit:1 http://repo.english-os.org/wasm stable InRelease"
+    Set text of line3 to "Reading package lists... Done!"
+    Set text of line4 to "Building dependency tree... Done!"
+    Set text of line5 to "Unpacking python3-pkg (3.11.2-1)..."
+    Set text of line6 to "Setting up python3-pkg... Done!"
 End
 
 On click btnSys:
+    Set text of line1 to "EnglishOS Shell [v1.1.0 CLI Extended]"
     Set text of line2 to "> sysinfo"
     Set text of line3 to "Host: CodePen WASM Canvas | Arch: Virtual VM"
     Set text of line4 to "Memory: 64MB Alloc | Engine: Active"
+    Set text of line5 to ""
+    Set text of line6 to ""
 End
 
 On click btnPy:
     Run python "import sys; f'Python {sys.version.split()[0]} via Pyodide'" as pyOut
+    Set text of line1 to "EnglishOS Shell [v1.1.0 CLI Extended]"
     Set text of line2 to "> python --version"
     Set text of line3 to "Executing WASM Runtime..."
     Set text of line4 to pyOut
+    Set text of line5 to ""
+    Set text of line6 to ""
 End
 
 On click btnClear:
+    Set text of line1 to "EnglishOS Shell [v1.1.0 CLI Extended]"
     Set text of line2 to ""
     Set text of line3 to ""
     Set text of line4 to "Console cleared."
+    Set text of line5 to ""
+    Set text of line6 to ""
 End
 
 On click btnHome:
