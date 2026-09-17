@@ -1,0 +1,39 @@
+Create window titled "Calculator App" size 640 x 420
+
+Set calcValue to 0
+
+Draw box at 0, 0 size 640 x 420 filled with "#0f172a" as bg
+Draw box at 180, 40 size 280 x 340 filled with "#1e293b" as calcFrame
+Draw box at 200, 60 size 240 x 40 filled with "#0f172a" as displayBg
+Draw text "Value: 0" at 215, 80 colored "#38bdf8" as displayVal
+
+Draw button "+1" at 200, 120 size 70 x 50 colored "#334155" as btnAdd1
+Draw button "+5" at 285, 120 size 70 x 50 colored "#334155" as btnAdd5
+Draw button "+10" at 370, 120 size 70 x 50 colored "#334155" as btnAdd10
+
+Draw button "Clear" at 200, 180 size 240 x 40 colored "#be123c" as btnClear
+Draw button "Return to Desktop" at 200, 230 size 240 x 40 colored "#0284c7" as btnHome
+
+On click btnAdd1:
+    Increase calcValue by 1
+    Set text of displayVal to "Value: " + calcValue
+End
+
+On click btnAdd5:
+    Increase calcValue by 5
+    Set text of displayVal to "Value: " + calcValue
+End
+
+On click btnAdd10:
+    Increase calcValue by 10
+    Set text of displayVal to "Value: " + calcValue
+End
+
+On click btnClear:
+    Set calcValue to 0
+    Set text of displayVal to "Value: 0"
+End
+
+On click btnHome:
+    Launch app "desktop"
+End
