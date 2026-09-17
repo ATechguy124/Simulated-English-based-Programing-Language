@@ -32,22 +32,39 @@ Draw button "⚡ Menu" at 12, 383 size 75 x 30 colored "#2563eb" as startBtn
 Draw text "System Online" at 100, 398 colored "#10b981" as sysStatus
 Draw text "Uptime: 0s" at 540, 398 colored "#f8fafc" as sysClock
 
-# Overlay Start Menu
+# Overlay Start Menu & Items
 Draw box at 12, 175 size 170 x 195 filled with "#1e293b" as startMenu
 Draw button "Calculator" at 22, 185 size 150 x 30 colored "#334155" as menuCalcBtn
 Draw button "Terminal" at 22, 220 size 150 x 30 colored "#334155" as menuTermBtn
 Draw button "Diagnostics" at 22, 255 size 150 x 30 colored "#334155" as menuSysBtn
 Draw button "Python App" at 22, 290 size 150 x 30 colored "#334155" as menuPyBtn
 Draw button "Dismiss" at 22, 330 size 150 x 25 colored "#e11d48" as menuCloseBtn
+
+# Initial Hidden State
 Hide startMenu
+Hide menuCalcBtn
+Hide menuTermBtn
+Hide menuSysBtn
+Hide menuPyBtn
+Hide menuCloseBtn
 
 # Event Handlers
 On click startBtn:
     Show startMenu
+    Show menuCalcBtn
+    Show menuTermBtn
+    Show menuSysBtn
+    Show menuPyBtn
+    Show menuCloseBtn
 End
 
 On click menuCloseBtn:
     Hide startMenu
+    Hide menuCalcBtn
+    Hide menuTermBtn
+    Hide menuSysBtn
+    Hide menuPyBtn
+    Hide menuCloseBtn
 End
 
 On click appCalcIcon:
