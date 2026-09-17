@@ -1,0 +1,24 @@
+Create window titled "System Diagnostics" size 640 x 420
+
+Set scanCycles to 0
+
+Draw box at 0, 0 size 640 x 420 filled with "#020617" as bg
+Draw text "EnglishOS Core Diagnostics" at 30, 40 colored "#38bdf8" as title
+Draw text "----------------------------------------" at 30, 60 colored "#1e293b" as div
+
+Draw text "Kernel Version: 5.0.0-Release" at 30, 90 colored "#f8fafc" as t1
+Draw text "Virtual Memory State: Allocated" at 30, 120 colored "#cbd5e1" as t2
+Draw text "Canvas Renderer: 2D Context Active" at 30, 150 colored "#cbd5e1" as t3
+Draw text "Scan Cycles Completed: 0" at 30, 180 colored "#4ade80" as t4
+
+Draw button "Run Diagnostic Scan" at 30, 220 size 180 x 40 colored "#0284c7" as scanBtn
+Draw button "Return to Desktop" at 220, 220 size 180 x 40 colored "#334155" as homeBtn
+
+On click scanBtn:
+    Increase scanCycles by 1
+    Set text of t4 to "Scan Cycles Completed: " + scanCycles
+End
+
+On click homeBtn:
+    Launch app "desktop"
+End
