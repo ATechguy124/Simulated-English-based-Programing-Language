@@ -1,0 +1,40 @@
+Create window titled "GNU nano 7.2" size 640 x 420
+
+Set nanoActive to 1
+Set nanoBuffer to "Create window titled 'My Script' size 640 x 420"
+Set statusMsg to "File: app.eng"
+
+# Interface Background
+Draw box at 0, 0 size 640 x 420 filled with "#020617" as bg
+Draw box at 0, 0 size 640 x 30 filled with "#1e293b" as headerBg
+Draw text "  GNU nano 7.2                 app.eng" at 15, 15 colored "#f8fafc" as headerText
+
+# Text Buffer Area
+Draw box at 10, 40 size 620 x 310 filled with "#090d16" as editorBox
+Draw text "Create window titled 'My Script' size 640 x 420" at 20, 60 colored "#22c55e" as nanoText
+
+# Footer Controls & Status Bar
+Draw box at 0, 355 size 640 x 25 filled with "#1e293b" as statusBg
+Draw text "File: app.eng" at 15, 367 colored "#38bdf8" as statusText
+
+Draw button "^O WriteOut" at 10, 385 size 140 x 30 colored "#334155" as btnSave
+Draw button "^X Exit" at 160, 385 size 120 x 30 colored "#be123c" as btnExit
+Draw button "Clear Buffer" at 290, 385 size 140 x 30 colored "#475569" as btnClear
+
+# --- EVENT HANDLERS ---
+On click btnSave:
+    Set statusMsg to "[ Wrote changes to app.eng ]"
+    Set text of statusText to statusMsg
+End
+
+On click btnClear:
+    Set nanoBuffer to ""
+    Set text of nanoText to " "
+    Set statusMsg to "[ Buffer Cleared ]"
+    Set text of statusText to statusMsg
+End
+
+On click btnExit:
+    Set nanoActive to 0
+    Launch app "terminal"
+End
